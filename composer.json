@@ -4,7 +4,13 @@
     "require": {
         "magento/module-catalog": ">= 101.0.0 < 103",
         "magento/module-ui": ">= 100.1.0"
-    },    
+    }, 
+    "repositories": [
+  {
+    "type": "git",
+    "url": "git@github.com:konstantinpatroev/M.git"
+  }
+],
     "type": "magento2-module",
     "version": "2.3.2",
     "license": [
