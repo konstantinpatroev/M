@@ -1,0 +1,18 @@
+#giftcard-info dl {
+    display: inline-block;
+    margin-bottom: 5px;
+}
+#giftcard-info dt {
+    float: left;
+    margin: 0 11px;
+    font-weight: normal;
+    clear: left;
+}
+#giftcard-info dd {
+    font-weight: bold;
+    margin: 0;
+    float: left;
+}
+.check-giftcard-status {
+    margin-top: 11px;
+}

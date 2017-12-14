@@ -1,0 +1,173 @@
+<?php
+/**
+ * Copyright © 2016 MageWorx. All rights reserved.
+ * See LICENSE.txt for license details.
+ */
+?>
+<?php /* @var $block \Magento\Catalog\Block\Product\View\AbstractView */?>
+<?php $_product = $block->getProduct(); ?>
+<?php $_preValues = $_product->getPreconfiguredValues(); ?>
+<?php $_currency  = $block->getCurrency(); ?>
+<?php $_from = $_currency->convert($_product->getMageworxGcOpenAmountMin()); ?>
+<?php $_to = $_currency->convert($_product->getMageworxGcOpenAmountMax()); ?>
+<?php $step = 1; ?>
+
+<div class="giftcard-info">
+    <?php if ($block->displayProductStockStatus()): ?>
+        <?php if ($_product->isAvailable()): ?>
+            <div class="stock available" title="<?php /* @escapeNotVerified */ echo __('Availability') ?>">
+                <span><?php /* @escapeNotVerified */ echo __('In stock') ?></span>
+            </div>
+        <?php else: ?>
+            <div class="stock unavailable" title="<?php /* @escapeNotVerified */ echo __('Availability') ?>">
+                <span><?php /* @escapeNotVerified */ echo __('Out of stock') ?></span>
+            </div>
+        <?php endif; ?>
+    <?php endif; ?>
+    <fieldset id="giftcard-fieldset" class="giftcard-fieldset" style="border:none">
+        <h2><div class="price-box"><span class="regular-price">
+                   <?php echo $block->getGiftCardPrice(); ?>
+                </span></div></h2>
+        <br/>
+        <?php if ($block->getAdditionalPrices() || $_product->getMageworxGcAllowOpenAmount()) : ?>
+            <div class="step-label">
+                <h3> <span><?php echo $step; $step++ ?></span> <?php echo __('Choose amount') ?></h3>
+                <hr />
+            </div>
+        <label for="card-amount" class="required">
+            <?php echo __('Card value'). '  (' . $_currency->getCurrencySymbol() . ') ' ?><em>*</em>:
+        </label><br/>
+        <select id="card-amount" name="card_amount" class="validate-select">
+            <?php if ($_product->getPrice() > 0) : ?>
+                <option value="<?php echo $_product->getPrice();?>"
+                    <?php echo 'selected'; ?>><?php echo $block->checkoutHelper->formatPrice($_product->getPrice());?>
+                </option>
+            <?php endif; ?>
+            <?php if ($block->getAdditionalPrices()): ?>
+                <?php foreach($block->getAdditionalPrices() as $additionalPrice) : ?>
+                    <?php if ($additionalPrice) : ?>
+                        <option value="<?php echo $additionalPrice;?>"
+                                <?php
+                                if ($_preValues->getCardAmount() == $additionalPrice && !$_product->getPrice()) {
+                                    echo 'selected';
+                                }; ?>>
+                            <?php echo $block->checkoutHelper->formatPrice($additionalPrice);?>
+                        </option>
+                    <?php endif; ?>
+                <?php endforeach; ?>
+            <?php endif; ?>
+            <?php if ($_product->getMageworxGcAllowOpenAmount()) : ?>
+                <option value="other_amount" >
+                    <?php echo __('Other Amount...');?>
+                </option>
+            <?php endif; ?>
+        </select>
+            <?php if ($_product->getMageworxGcAllowOpenAmount()) : ?>
+                <div class="field">
+                    <input type="text" id="other_amount" name="card_amount_other" class="input-text required-entry"
+                           placeholder="<?php echo $block->escapeHtml($block->getPlaceholder()) ?>"/>
+                    <div class="warnings">
+                        <div id="max" class="mage-error">
+                            <?php echo __("Entered amount is too high"); ?>
+                        </div>
+                        <div id="min" class="mage-error">
+                            <?php echo __("Entered amount is too low"); ?>
+                        </div>
+                    </div>
+                </div>
+            <?php endif; ?>
+        <?php else: ?>
+            <h2><div class="price-box"><span class="regular-price">
+                    <?php $this->helper('Magento\Checkout\Helper\Data')->formatPrice($_product->getPrice()) ?>
+                </span></div></h2>
+            <br/>
+        <?php endif; ?>
+        <div class="step-label">
+            <h3>
+                <?php if ($step > 1) : ?>
+                    <span><?php echo $step; $step++ ?></span>
+                <?php endif; ?>
+                <?php echo __('Send Information') ?>
+            </h3>
+            <hr />
+        </div>
+        <div class="field">
+            <label for="mail-from"><?php echo __('From Name') ?>:</label><br/>
+            <input type="text" id="mail-from" name="mail_from" class="input-text"
+                   value="<?php echo $_preValues->getMailFrom();?>"/>
+        </div>
+        <div class="field">
+            <label for="mail-to"><?php echo __('To Name') ?>:</label><br/>
+            <input type="text" id="mail-to" name="mail_to" class="input-text"
+                   value="<?php echo $_preValues->getMailTo();?>"/>
+        </div>
+        <?php if ($block->getCardType() == 1): ?>
+            <div class="field">
+                <label for="mail-to-email" class="required"><?php echo __('To E-mail') ?><em>*</em>:</label><br/>
+                <input type="text" id="mail-to-email"
+                       name="mail_to_email" class="input-text required-entry validate-email"
+                       value="<?php echo $_preValues->getMailToEmail();?>"/>
+            </div>
+        <?php endif; ?>
+        <div class="field">
+            <label for="mail-message"><?php echo __('Message') ?>:</label><br/>
+            <textarea id="mail-message" name="mail_message" ><?php echo $_preValues->getMailMessage();?></textarea>
+        </div>
+        <?php if ($block->getCardType() == MageWorx\GiftCards\Model\GiftCards::TYPE_EMAIL) : ?>
+        <!--Preview-->
+        <br/>
+        <a href="#" id="card-preview"> <?php echo __('Preview my gift card'); ?>. </a>
+<script>
+    require(['jquery', 'Magento_Ui/js/modal/alert','mage/translate'], function ($, alert, $t) {
+            $('#card-preview').on('click', function() {
+                if ($('#card-amount')) {
+                    var price = $('#card-amount').val();
+                    if (price == 'other_amount') {
+                        price = $('#other_amount').val();
+                    }
+                }
+                if (!price) {
+                    var price = $('div.price-box span.regular-price span.price');
+                    price = price[0].innerHTML;
+                    price = price.slice(1);
+                }
+                var obj = new Object();
+                obj.mailFrom = $('#mail-from').val();
+                obj.mailTo = $('#mail-to').val();
+                obj.mailToEmail = $('#mail-to-email').val();
+                obj.mailMessage = $('#mail-message').val();
+                obj.cardType = <?php echo $this->getCardType(); ?>;
+                obj.product = <?php echo $_product->getId() ?>;
+                obj.price = price;
+
+                $.ajax({
+                    showLoader: true,
+                    url: '<?php echo $this->getUrl('mageworx_giftcards/preview/preview'); ?>',
+                    data:  obj,
+                    type: "POST"
+                }).done(function (data) {
+                    $('.loading-mask').hide();
+                    alert({
+                        title: '<?php echo $_product->getName() ?>',
+                        content: data
+                    });
+                }.bind(this));
+            }),
+
+            $(document).ready(function() {
+                showOtherAmountBlock();
+            }),
+
+            $('#card-amount').on('change', function() {
+                cardAmountChangeAction();
+            }),
+
+            $('#other_amount').on('change', function() {
+                otherAmountValidate(<?php echo $_from ? $_from : 0 ?>, <?php echo $_to ? $_to : 0?>);
+            })
+    });
+</script>
+
+        <?php endif; ?>
+    </fieldset>
+</div>

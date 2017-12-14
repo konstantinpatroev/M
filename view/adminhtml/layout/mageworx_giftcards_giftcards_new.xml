@@ -1,0 +1,23 @@
+<?xml version="1.0"?>
+<!--
+/**
+ * Copyright © 2016 MageWorx. All rights reserved.
+ * See LICENSE.txt for license details.
+ */
+-->
+<page xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" layout="admin-2columns-left" xsi:noNamespaceSchemaLocation="urn:magento:framework:View/Layout/etc/page_configuration.xsd">
+    <update handle="giftcards_giftcards_new"/>
+    <head>
+        <css src="MageWorx_GiftCards::css/styles.css" />
+    </head>
+    <body>
+        <referenceBlock name="page.title">
+            <action method="setTitleClass">
+                <argument name="class" xsi:type="string">complex</argument>
+            </action>
+        </referenceBlock>
+        <referenceContainer name="content">
+            <block class="MageWorx\GiftCards\Block\Adminhtml\GiftCards\Edit" name="admin.mageworx.giftcards.edit.form.container" />
+        </referenceContainer>
+    </body>
+</page>

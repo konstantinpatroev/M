@@ -1,0 +1,36 @@
+<?xml version="1.0"?>
+<page xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:framework:View/Layout/etc/page_configuration.xsd">
+    <head>
+        <css src="MageWorx_GiftCards::css/checkout.css" />
+    </head>
+    <body>
+        <referenceContainer name="cart.discount">
+            <block class="MageWorx\GiftCards\Block\Cart\GiftCards" name="checkout.cart.giftcards" template="cart/coupon.phtml" after="checkout.cart.coupon" />
+        </referenceContainer>
+        <referenceBlock name="checkout.cart.giftcardaccount" remove="true" />
+        <move element="checkout.cart.giftcards" destination="cart.discount" before="checkout.cart.coupon" />
+        <referenceBlock name="checkout.cart.totals">
+            <arguments>
+                <argument name="jsLayout" xsi:type="array">
+                    <item name="components" xsi:type="array">
+                        <item name="block-totals" xsi:type="array">
+                            <item name="children" xsi:type="array">
+                                <item name="before_grandtotal" xsi:type="array">
+                                    <item name="children" xsi:type="array">
+                                        <item name="mageworx_giftcards" xsi:type="array">
+                                            <item name="component"  xsi:type="string">MageWorx_GiftCards/js/view/cart/totals/giftcardsdiscount</item>
+                                            <item name="sortOrder" xsi:type="string">20</item>
+                                            <item name="config" xsi:type="array">
+                                                <item name="title" xsi:type="string" translate="true"></item>
+                                            </item>
+                                        </item>
+                                    </item>
+                                </item>
+                            </item>
+                        </item>
+                    </item>
+                </argument>
+            </arguments>
+        </referenceBlock>
+    </body>
+</page>

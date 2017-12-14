@@ -1,0 +1,20 @@
+{
+    "name": "mageworx/module-giftcardsbase",
+    "description": "MageWorx Gift cards",
+    "require": {
+        "magento/module-catalog": ">= 101.0.0 < 103",
+        "magento/module-ui": ">= 100.1.0"
+    },    
+    "type": "magento2-module",
+    "version": "2.3.2",
+    "license": [
+        "OSL-3.0",
+        "AFL-3.0"
+    ],
+    "autoload": {
+        "files": [ "registration.php" ],
+        "psr-4": {
+            "MageWorx\\GiftCards\\": ""
+        }
+    }
+}
